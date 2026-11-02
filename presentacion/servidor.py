@@ -34,6 +34,7 @@ CARPETA_MODELOS = CARPETA.parent / "modelos"           # los .pt van directament
 MODELO_POR_DEFECTO = "cervezas_nano_v5.pt"             # para la demo: el nano (ver LEEME de probarModelos)
 IMGSZ = 640                                            # el mismo tamaño con el que se entrenó
 CLASES_ESPERADAS = {"aguila", "andina", "club_colombia", "costena", "heineken", "poker"}
+MAX_BYTES = 5 * 1024 * 1024                            # un frame JPEG de 720p pesa ~150 KB; más que esto se rechaza
 # -------------------------------------------------------------------------------------
 
 DISPOSITIVO = 0 if torch.cuda.is_available() else "cpu"
@@ -106,7 +107,19 @@ class Manejador(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(cuerpo)
 
+    def es_de_la_demo(self):
+        """Solo acepta peticiones de NUESTRA página (http://localhost:<puerto>). Así otra página web abierta en el
+        navegador no puede usar el servidor a escondidas (CSRF / DNS rebinding)."""
+        puerto = self.server.server_address[1]
+        permitidos = {f"localhost:{puerto}", f"127.0.0.1:{puerto}"}
+        if self.headers.get("Host", "") not in permitidos:
+            return False
+        origen = self.headers.get("Origin")
+        return origen is None or origen in {f"http://{h}" for h in permitidos}
+
     def do_GET(self):
+        if not self.es_de_la_demo():
+            return self.responder({"error": "petición no permitida"}, 403)
         if urlparse(self.path).path == "/api/modelos":
             return self.responder({"modelos": modelos_disponibles(), "actual": estado["nombre"],
                                    "por_defecto": MODELO_POR_DEFECTO, "dispositivo": NOMBRE_DISPOSITIVO})
@@ -114,7 +127,17 @@ class Manejador(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         url = urlparse(self.path)
-        cuerpo = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+        largo = int(self.headers.get("Content-Length", 0) or 0)
+        tipo = self.headers.get("Content-Type", "")
+        if not self.es_de_la_demo():
+            return self.responder({"error": "petición no permitida"}, 403)
+        if largo > MAX_BYTES:
+            return self.responder({"error": "petición demasiado grande"}, 413)
+        # Un formulario de otra página no puede mandar estos tipos sin permiso del navegador
+        if (url.path == "/api/cargar" and not tipo.startswith("application/json")) or \
+           (url.path == "/api/detectar" and not tipo.startswith("image/jpeg")):
+            return self.responder({"error": "tipo de contenido no permitido"}, 415)
+        cuerpo = self.rfile.read(largo)
         try:
             if url.path == "/api/cargar":
                 return self.responder(cargar_modelo(json.loads(cuerpo)["modelo"]))
