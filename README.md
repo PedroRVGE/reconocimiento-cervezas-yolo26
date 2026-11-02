@@ -45,11 +45,13 @@ Todos los detalles (panel, teclas, cómo funciona y problemas comunes) están en
 │   ├── cervezas_nano_v1.pt / cervezas_small_v1.pt
 │   ├── cervezas_nano_v4.pt / cervezas_small_v4.pt
 │   ├── cervezas_nano_v5.pt / cervezas_small_v5.pt      ← la demo arranca con el nano v5
+│   ├── cervezas_nano_v6.pt / cervezas_small_v6.pt
 │   └── probarModelos/                probar_modelo.py: probar un .pt con webcam, imágenes o video (OpenCV)
 ├── NotebooksEjecutados/           ← notebooks de entrenamiento CON sus resultados
 │   ├── 01_Ejecutado.ipynb            primer entrenamiento (dataset v1)
 │   ├── 02_ejecutado_v4.ipynb         entrenamiento con el dataset v4
-│   └── 02_ejecutado_v5.ipynb         entrenamiento con el dataset v5 (aumentos x3)
+│   ├── 02_ejecutado_v5.ipynb         entrenamiento con el dataset v5 (aumentos x3)
+│   └── 02_ejecutado_v6.ipynb         entrenamiento con el dataset v6 (fotos de v4 + fotos de webcam)
 ├── GuiasClase/
 │   └── ProbarCamara.py (+ _comentado)   script de la clase para probar la cámara
 ├── extras_v4/RESULTADOS_v4.md, comparacion_v4.csv
