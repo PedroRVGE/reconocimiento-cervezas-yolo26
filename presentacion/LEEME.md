@@ -24,7 +24,7 @@ carpeta (el nombre de esa carpeta no importa):
 ```
 CualquierNombre/
 ├── modelos/                        ← los .pt van DIRECTAMENTE aquí (sin subcarpetas)
-│   ├── cervezas_nano_v5.pt         ← la demo arranca con este; si no está, con el primero de la lista
+│   ├── cervezas_small_v6.pt        ← la demo arranca con este; si no está, con el primero de la lista
 │   ├── cervezas_small_v5.pt
 │   └── ... (cervezas_nano_v1/v4, cervezas_small_v1/v4)
 └── presentacion/
@@ -39,7 +39,7 @@ CualquierNombre/
 ```
 
 - Los `.pt` **no se descomprimen**: por dentro son un zip, pero se usan tal cual.
-- No hace falta tener todos los `.pt`. Con `cervezas_nano_v5.pt` basta.
+- No hace falta tener todos los `.pt`. Con `cervezas_small_v6.pt` basta.
 - La primera vez, `iniciar.bat` crea una carpeta `presentacion/.venv/` con Python y las librerías. **No hay que
   enviarla** a otro computador: cada PC crea la suya.
 
@@ -73,7 +73,7 @@ python servidor.py
 2. Se abre una **ventana negra (consola)**, que es el servidor. Cuando dice `Naíto está listo en http://localhost:8000`,
    se abre solo el navegador. Si no se abre, entrar a mano a <http://localhost:8000>.
 3. La página abre **afuera del bar**: una fachada vaquera de noche, con Naíto asomado por encima de las puertas.
-   Abajo dice `✓ Servidor listo · cervezas_nano_v5` cuando el modelo ya cargó.
+   Abajo dice `✓ Servidor listo · cervezas_small_v6` cuando el modelo ya cargó.
 4. Presionar **"Entrar al Bar Naíto"** (o la tecla **Enter**). Suena una campanita, se abren las puertas vaqueras,
    la cámara se acerca hasta Naíto y ahí arrancan la webcam y el modelo.
 5. **Permitir la cámara** cuando el navegador lo pregunte.
@@ -102,7 +102,7 @@ Para la presentación: tecla **F** (pantalla completa) **antes** de entrar, para
 |---|---|
 | **Modelo (.pt)** | Cualquier `.pt` de `modelos/`. Avisa si no tiene nuestras 6 marcas (por ejemplo, si es el `yolo26n.pt` base de COCO). |
 | **Cámara** | Elegir otra webcam si hay varias. |
-| **Umbral de confianza** | Por defecto 0.50. Los umbrales F1 de cada modelo están en `extras_v5/RESULTADOS_v5.md`. |
+| **Umbral de confianza** | Por defecto 0.53 (umbral F1 del small v6), ajustable de a 0.01. Los umbrales F1 de v4 y v5 están en `extras_v5/RESULTADOS_v5.md`; los de v6, en `NotebooksEjecutados/02_ejecutado_v6.ipynb`. |
 | **Gustos** | **Arrastrar las cajitas** (en el panel o directamente en la pizarra del bar), o usar ▲▼, "Al azar" y "Restablecer". 1 = le encanta, 6 = nada. Se guarda en el navegador. |
 | **Mostrar todas las cajas** | Si se apaga, solo se ve la caja de la lata elegida. |
 | **Espejo** | Solo voltea lo que se **ve**. Al modelo le llega la imagen sin voltear, porque los logos no se voltean (`fliplr=0`). |

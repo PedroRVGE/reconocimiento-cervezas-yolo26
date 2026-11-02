@@ -31,7 +31,7 @@ from ultralytics import YOLO
 CARPETA = Path(__file__).resolve().parent              # presentacion/
 CARPETA_WEB = CARPETA / "web"
 CARPETA_MODELOS = CARPETA.parent / "modelos"           # los .pt van directamente en modelos/
-MODELO_POR_DEFECTO = "cervezas_nano_v5.pt"             # para la demo: el nano (ver LEEME de probarModelos)
+MODELO_POR_DEFECTO = "cervezas_small_v6.pt"            # para la demo: el small v6 (mejor en test)
 IMGSZ = 640                                            # el mismo tamaño con el que se entrenó
 CLASES_ESPERADAS = {"aguila", "andina", "club_colombia", "costena", "heineken", "poker"}
 MAX_BYTES = 5 * 1024 * 1024                            # un frame JPEG de 720p pesa ~150 KB; más que esto se rechaza

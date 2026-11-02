@@ -44,8 +44,8 @@ Todos los detalles (panel, teclas, cómo funciona y problemas comunes) están en
 ├── modelos/                       ← modelos entrenados (no se descomprimen: se usan tal cual)
 │   ├── cervezas_nano_v1.pt / cervezas_small_v1.pt
 │   ├── cervezas_nano_v4.pt / cervezas_small_v4.pt
-│   ├── cervezas_nano_v5.pt / cervezas_small_v5.pt      ← la demo arranca con el nano v5
-│   ├── cervezas_nano_v6.pt / cervezas_small_v6.pt
+│   ├── cervezas_nano_v5.pt / cervezas_small_v5.pt
+│   ├── cervezas_nano_v6.pt / cervezas_small_v6.pt      ← la demo arranca con el small v6
 │   └── probarModelos/                probar_modelo.py: probar un .pt con webcam, imágenes o video (OpenCV)
 ├── NotebooksEjecutados/           ← notebooks de entrenamiento CON sus resultados
 │   ├── 01_Ejecutado.ipynb            primer entrenamiento (dataset v1)

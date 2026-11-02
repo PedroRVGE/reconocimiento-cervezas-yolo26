@@ -10,7 +10,7 @@
 // ------------------------------- CONFIGURACIÓN ---------------------------------------
 const ANCHO = 1280, ALTO = 720, FPS_CAMARA = 30;   // formato de la webcam del portátil
 const CALIDAD_JPEG = 0.85;
-const CONF_INICIAL = 0.50;
+const CONF_INICIAL = 0.53;          // umbral F1 óptimo del small v6
 // Cada lata es una "pista": con tracking, una por ID de ByteTrack; sin tracking, una por marca.
 const CONFIRMA = 2;          // frames que hay que ver una pista antes de tenerla en cuenta (evita detecciones sueltas)
 const OLVIDO_MS = 500;       // una lata deja de contar si no se ve en este tiempo...
