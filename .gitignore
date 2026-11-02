@@ -1,0 +1,52 @@
+# =====================================================================
+# Repositorio "final" del proyecto: se ignora TODO y solo se permite
+# lo que va en el repo (lista blanca). Para agregar algo, añadir una
+# línea con "!" (y, si está en una subcarpeta, permitir la carpeta).
+# =====================================================================
+/*
+
+# --- Archivos de la raíz ---
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/IniciarBarNaito.bat
+
+# --- Modelos entrenados (.pt) y el script para probarlos ---
+!/modelos/
+/modelos/*
+!/modelos/*.pt
+!/modelos/probarModelos/
+/modelos/probarModelos/*
+!/modelos/probarModelos/LEEME.md
+!/modelos/probarModelos/probar_modelo.py
+!/modelos/probarModelos/requirements.txt
+
+# --- Notebooks ejecutados (con resultados) ---
+!/NotebooksEjecutados/
+/NotebooksEjecutados/*
+!/NotebooksEjecutados/*.ipynb
+
+# --- ProbarCamara.py de la clase ---
+!/GuiasClase/
+/GuiasClase/*
+!/GuiasClase/ProbarCamara.py
+!/GuiasClase/ProbarCamara_comentado.py
+
+# --- Resultados de v4 y v5 (tablas y comparaciones) ---
+!/extras_v4/
+/extras_v4/*
+!/extras_v4/RESULTADOS_v4.md
+!/extras_v4/comparacion_v4.csv
+!/extras_v5/
+/extras_v5/*
+!/extras_v5/RESULTADOS_v5.md
+!/extras_v5/comparacion_v5.csv
+
+# --- Demo "Bar Naíto" ---
+!/presentacion/
+
+# --- Nunca subir (aunque estén dentro de carpetas permitidas) ---
+.venv/
+__pycache__/
+capturas/
+*.pyc

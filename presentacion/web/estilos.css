@@ -1,0 +1,248 @@
+/* ===================== Bar Naíto — estilos ===================== */
+:root {
+  --tinta: #2b2b38;
+  --led: #38d9ff;          /* color de los LED del robot; app.js lo cambia según el humor */
+  --dorado: #ffd23f;
+  --panel-fondo: #1e1a22;
+  --panel-texto: #f3ece2;
+  --panel-borde: #3d3440;
+  --tiza: #f4f1e8;
+  --fuente: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --fuente-tiza: "Segoe Print", "Comic Sans MS", "Chalkboard SE", cursive;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { background: #120c0a; font-family: var(--fuente); color: var(--tinta); }
+
+/* El escenario mide 1600x900 y app.js lo escala para que quepa en la ventana */
+#escenario {
+  position: absolute; left: 50%; top: 50%;
+  width: 1600px; height: 900px;
+  transform-origin: center center;
+  overflow: hidden;
+}
+#bar { position: absolute; inset: 0; }
+
+.neon { font: 700 64px var(--fuente-tiza); fill: #ffe9f5; stroke: #ff3fa4; stroke-width: 2.5; }
+.placa { font: 700 26px var(--fuente); fill: #3b2a05; }
+.placa.chica { font-size: 19px; font-weight: 400; }
+
+/* ---------- Televisor ---------- */
+#tele {
+  position: absolute; left: 636px; top: 116px; width: 892px; height: 514px;
+  padding: 14px; border-radius: 22px;
+  background: linear-gradient(#2d2d33, #17171b);
+  border: 5px solid #0b0b0d;
+  box-shadow: 0 18px 30px rgba(0,0,0,.5), inset 0 0 0 3px #3b3b44;
+}
+#tele::before, #tele::after {             /* cables que cuelgan el televisor */
+  content: ""; position: absolute; top: -120px; width: 4px; height: 110px; background: #1a1a1a;
+}
+#tele::before { left: 120px; } #tele::after { right: 120px; }
+#pantalla { position: relative; width: 100%; height: 100%; border-radius: 10px; overflow: hidden; background: #000; }
+#video, #cajas { position: absolute; inset: 0; width: 100%; height: 100%; }
+#video { object-fit: contain; }
+.espejo #video { transform: scaleX(-1); }
+#hud {
+  position: absolute; left: 10px; bottom: 8px; padding: 4px 10px; border-radius: 8px;
+  background: rgba(0,0,0,.6); color: #d8f7ff; font: 600 15px Consolas, monospace;
+}
+#aviso {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  max-width: 80%; padding: 18px 24px; border-radius: 14px; text-align: center;
+  background: rgba(20,10,10,.85); color: #ffd1d1; font-size: 22px; line-height: 1.35;
+}
+
+/* ---------- Robot ---------- */
+#robot { position: absolute; left: 90px; top: 175px; overflow: visible; }
+.blanco { fill: #fbfbfd; stroke: var(--tinta); stroke-width: 5; }
+.gris { fill: #c9ced6; stroke: var(--tinta); stroke-width: 5; }
+.naranja { fill: #f28c28; stroke: var(--tinta); stroke-width: 5; }
+.led { fill: var(--led); stroke: var(--tinta); stroke-width: 4; filter: drop-shadow(0 0 6px var(--led)); }
+.ojo { fill: #10131b; stroke: var(--led); stroke-width: 6; filter: drop-shadow(0 0 5px var(--led)); }
+.pupila { fill: var(--led); }
+
+#laser { position: absolute; inset: 0; pointer-events: none; }
+
+/* ---------- Bocadillo ---------- */
+#bocadillo {
+  position: absolute; left: 30px; top: 22px; width: 540px; min-height: 120px;
+  padding: 18px 24px; border-radius: 28px;
+  background: #fffdf6; border: 5px solid var(--tinta);
+  box-shadow: 0 8px 0 rgba(0,0,0,.25);
+  transition: transform .25s;
+}
+#bocadillo::after {                        /* la colita que apunta a la cabeza */
+  content: ""; position: absolute; left: 230px; bottom: -34px;
+  border: 18px solid transparent; border-top: 22px solid var(--tinta); border-bottom: 0;
+}
+#bocadillo::before {
+  content: ""; position: absolute; left: 236px; bottom: -22px; z-index: 1;
+  border: 12px solid transparent; border-top: 16px solid #fffdf6; border-bottom: 0;
+}
+#bocadillo.salta { transform: scale(1.04) rotate(-1deg); }
+#texto-bocadillo { font: 700 30px/1.2 var(--fuente); }
+#veo { margin-top: 6px; font-size: 18px; color: #6b5f55; min-height: 22px; }
+
+/* ---------- Pizarra con el ranking ---------- */
+#pizarra {
+  position: absolute; left: 600px; top: 748px; width: 960px; height: 136px;
+  padding: 10px 18px; border-radius: 10px;
+  background: #23312a; border: 10px solid #8d5427;
+  box-shadow: inset 0 0 30px rgba(0,0,0,.6);
+  color: var(--tiza); font-family: var(--fuente-tiza);
+  display: flex; align-items: center; gap: 18px;
+}
+#pizarra-titulo { width: 120px; font-size: 24px; line-height: 1.1; text-align: center; transform: rotate(-4deg); }
+#ranking { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; }
+#ranking li {
+  position: relative; padding: 8px 4px; border-radius: 10px; text-align: center;
+  border: 2px dashed rgba(244,241,232,.25); opacity: .45; transition: all .25s;
+}
+#ranking .num { display: block; font-size: 15px; }
+#ranking .marca { display: block; font-size: 19px; line-height: 1.1; }
+#ranking .punto { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; }
+#ranking li.visible { opacity: 1; border-color: rgba(244,241,232,.7); }
+#ranking li.elegida {
+  opacity: 1; border: 3px solid var(--dorado); color: var(--dorado);
+  box-shadow: 0 0 14px rgba(255,210,63,.6); transform: translateY(-4px) scale(1.06);
+}
+#ranking li.elegida::after { content: "★"; position: absolute; top: -14px; right: -6px; font-size: 26px; }
+
+/* ---------- Panel ---------- */
+#boton-panel {
+  position: fixed; top: 12px; right: 12px; z-index: 20;
+  width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(30,26,34,.8); color: #fff; font-size: 24px;
+}
+#panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 10; width: 340px;
+  padding: 64px 20px 20px; overflow-y: auto;
+  background: var(--panel-fondo); color: var(--panel-texto); border-left: 1px solid var(--panel-borde);
+  box-shadow: -10px 0 30px rgba(0,0,0,.4);
+  transition: transform .3s;
+}
+#panel.oculto { transform: translateX(100%); }
+#panel h2 { margin: 0 0 14px; font-size: 20px; }
+#panel h3 { margin: 20px 0 8px; font-size: 15px; color: #e9c46a; }
+#panel label { display: block; margin: 10px 0; font-size: 14px; }
+#panel select, #panel input[type=range] { display: block; width: 100%; margin-top: 4px; }
+#panel select {
+  padding: 6px; border-radius: 6px; border: 1px solid var(--panel-borde);
+  background: #2a2430; color: var(--panel-texto); font-size: 14px;
+}
+#panel .check { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+#panel .nota { font-size: 12.5px; color: #b6aba2; line-height: 1.4; }
+#panel .nota.error { color: #ff9b9b; }
+#panel button {
+  padding: 6px 10px; border-radius: 6px; border: 1px solid var(--panel-borde);
+  background: #2a2430; color: var(--panel-texto); cursor: pointer;
+}
+#panel button:hover { background: #3a3242; }
+#panel .fila { display: flex; gap: 8px; }
+#lista-gustos { margin: 0; padding: 0; list-style: none; }
+#lista-gustos li {
+  display: flex; align-items: center; gap: 8px; margin: 4px 0; padding: 6px 8px;
+  border-radius: 8px; background: #2a2430;
+}
+#lista-gustos .pos { width: 18px; color: #e9c46a; font-weight: 700; }
+#lista-gustos li, #ranking li { cursor: grab; user-select: none; }
+#lista-gustos .agarre { color: #8a7f86; }
+.arrastrando { opacity: .35 !important; outline: 2px dashed var(--dorado); }
+#lista-gustos .nombre { flex: 1; }
+#lista-gustos button { padding: 2px 8px; }
+
+/* ===================== Entrada: fachada del saloon ===================== */
+#entrada { position: fixed; inset: 0; z-index: 30; overflow: hidden; }
+body.en-entrada #panel, body.en-entrada #boton-panel { visibility: hidden; }
+#entrada.fuera { display: none; }
+#fachada {
+  position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px;
+  transform-origin: center center;
+}
+#fachada-zoom {
+  position: absolute; inset: 0;
+  transform-origin: 800px 650px;               /* centro de la puerta */
+  transition: transform 1.6s cubic-bezier(.55, 0, .35, 1), opacity .7s ease-in .8s;
+}
+.letrero-oeste {
+  font: 900 62px "Rockwell Extra Bold", "Rockwell", "Bookman Old Style", Georgia, serif;
+  letter-spacing: 8px; fill: #3a2010; stroke: #f6dcaa; stroke-width: 1.5px; paint-order: stroke;
+}
+/* Puertas vaqueras dentro del hueco de la puerta (x 640–960, y 440–860; ver HUECO en app.js) */
+#puertas { position: absolute; left: 640px; top: 590px; width: 320px; height: 220px; perspective: 900px; }
+.hoja { position: absolute; top: 0; width: 160px; height: 220px; }
+.hoja.izq { left: 0; transform-origin: left center; }
+.hoja.der { right: 0; transform-origin: right center; }
+.madera-hoja { fill: #a4672f; stroke: #3a2010; stroke-width: 8; }
+/* Las puertas se abren hacia adentro y rebotan un poco, como en las películas */
+.abrir .hoja.izq { animation: abrir-izq 1.3s ease-out forwards; }
+.abrir .hoja.der { animation: abrir-der 1.3s ease-out forwards; }
+@keyframes abrir-izq { 0% { transform: rotateY(0); } 40% { transform: rotateY(115deg); } 65% { transform: rotateY(78deg); } 85% { transform: rotateY(98deg); } 100% { transform: rotateY(90deg); } }
+@keyframes abrir-der { 0% { transform: rotateY(0); } 40% { transform: rotateY(-115deg); } 65% { transform: rotateY(-78deg); } 85% { transform: rotateY(-98deg); } 100% { transform: rotateY(-90deg); } }
+/* Al pasar el mouse por el botón, las puertas se mecen como si alguien las fuera a empujar */
+#entrada:not(.abrir):has(#btn-entrar:hover) .hoja.izq { animation: mecer-izq .8s ease-in-out infinite; }
+#entrada:not(.abrir):has(#btn-entrar:hover) .hoja.der { animation: mecer-der .8s ease-in-out infinite; }
+@keyframes mecer-izq { 50% { transform: rotateY(22deg); } }
+@keyframes mecer-der { 50% { transform: rotateY(-22deg); } }
+/* Acercamiento: la fachada crece alrededor de la puerta y se desvanece */
+.acercar #fachada-zoom { transform: scale(5); opacity: 0; }
+#escenario.viajando { transition: transform 1.6s cubic-bezier(.55, 0, .35, 1), clip-path 1.6s cubic-bezier(.55, 0, .35, 1); }
+
+/* ---------- Detalles de la entrada ---------- */
+/* Estrella fugaz cada ~7 s */
+.fugaz { opacity: 0; animation: fugaz 7s linear infinite 1.5s; }
+@keyframes fugaz { 0% { opacity: 0; transform: translate(150px, 40px); } 3% { opacity: 1; } 12% { opacity: 0; transform: translate(650px, 210px); } 100% { opacity: 0; transform: translate(650px, 210px); } }
+/* Faroles que titilan */
+.farol .halo { animation: titilar 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes titilar { 0%, 100% { opacity: .3; transform: scale(1); } 40% { opacity: .5; transform: scale(1.08); } 55% { opacity: .25; } }
+/* Los sombreros se mueven un poquito, como con el viento */
+.sombrero { animation: viento 3.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+@keyframes viento { 50% { rotate: 4deg; } }
+/* Banderines de estrellas que se balancean */
+#banderines polygon { animation: balanceo 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center top; }
+@keyframes balanceo { 0%, 100% { rotate: -8deg; } 50% { rotate: 8deg; } }
+/* Bola de paja rodando por el porche */
+#paja { position: absolute; left: 0; top: 790px; animation: rodar 9s linear infinite 2s; opacity: 0; }
+@keyframes rodar {
+  0% { opacity: 1; transform: translate(-150px, 0) rotate(0); }
+  20% { transform: translate(250px, -40px) rotate(260deg); }
+  30% { transform: translate(400px, 0) rotate(390deg); }
+  50% { transform: translate(800px, -30px) rotate(650deg); }
+  60% { transform: translate(960px, 0) rotate(780deg); }
+  100% { opacity: 1; transform: translate(1800px, 0) rotate(1300deg); }
+}
+/* Luz cálida que sale de la puerta al abrirse */
+#destello {
+  position: absolute; left: 640px; top: 440px; width: 320px; height: 420px; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 60%, rgba(255,226,160,.95), rgba(255,170,60,.4) 45%, transparent 75%);
+  opacity: 0; mix-blend-mode: screen;
+}
+.abrir #destello { animation: destello 1.4s ease-out forwards; }
+@keyframes destello { 0% { opacity: 0; } 30% { opacity: .9; } 100% { opacity: .15; } }
+/* El bocadillo se esconde en la entrada (se vería cortado por el marco) y aparece al entrar */
+body.en-entrada #bocadillo { opacity: 0; }
+#bocadillo { transition: transform .25s, opacity .5s; }
+
+#entrada-ui {
+  position: absolute; left: 0; right: 0; bottom: 4vh;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  transition: opacity .3s;
+}
+.abrir #entrada-ui { opacity: 0; pointer-events: none; }
+#btn-entrar {
+  padding: 14px 36px; border-radius: 16px; cursor: pointer;
+  font: 700 clamp(18px, 3.4vmin, 34px) var(--fuente-tiza); color: #3b2205;
+  background: linear-gradient(#ffd977, #f0a83a); border: 6px solid #3a2010;
+  box-shadow: 0 8px 0 #3a2010, 0 0 30px rgba(255,190,80,.7);
+  animation: latido 1.6s ease-in-out infinite;
+}
+#btn-entrar:hover { filter: brightness(1.08); }
+#btn-entrar:active { transform: translateY(4px); box-shadow: 0 4px 0 #3a2010; }
+@keyframes latido { 50% { transform: scale(1.05); } }
+#estado-servidor {
+  padding: 4px 12px; border-radius: 8px; background: rgba(0,0,0,.55);
+  color: #f3ece2; font-size: clamp(12px, 1.6vmin, 16px);
+}
+#estado-servidor.error { color: #ffb3b3; }

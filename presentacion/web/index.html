@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bar Naíto</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body class="en-entrada">
+
+<!-- ============ ESCENARIO de 1600x900 que se escala para llenar la pantalla ============ -->
+<div id="escenario">
+
+  <!-- Fondo del bar (todo dibujado en SVG, sin imágenes externas: funciona sin internet) -->
+  <svg id="bar" viewBox="0 0 1600 900" width="1600" height="900" aria-hidden="true">
+    <defs>
+      <pattern id="ladrillos" width="80" height="40" patternUnits="userSpaceOnUse">
+        <rect width="80" height="40" fill="#7a3b26"/>
+        <rect x="2" y="2" width="76" height="16" rx="3" fill="#8e4a30"/>
+        <rect x="-38" y="22" width="76" height="16" rx="3" fill="#86442c"/>
+        <rect x="42" y="22" width="76" height="16" rx="3" fill="#86442c"/>
+      </pattern>
+      <pattern id="tablas" width="60" height="200" patternUnits="userSpaceOnUse">
+        <rect width="60" height="200" fill="#5b3420"/>
+        <rect x="0" width="4" height="200" fill="#3f2314"/>
+        <circle cx="30" cy="30" r="3" fill="#3f2314"/>
+        <circle cx="30" cy="170" r="3" fill="#3f2314"/>
+      </pattern>
+      <radialGradient id="luzCalida" cx="50%" cy="0%" r="90%">
+        <stop offset="0" stop-color="#ffd27a" stop-opacity=".35"/>
+        <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="madera" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#b9763f"/>
+        <stop offset="1" stop-color="#8d5427"/>
+      </linearGradient>
+      <filter id="neon" x="-20%" y="-50%" width="140%" height="200%">
+        <feGaussianBlur stdDeviation="5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- Pared de ladrillo con zócalo de madera -->
+    <rect width="1600" height="900" fill="url(#ladrillos)"/>
+    <rect width="1600" height="900" fill="url(#luzCalida)"/>
+    <rect y="560" width="1600" height="160" fill="#4a2a18" opacity=".55"/>
+
+    <!-- Guirnalda de bombillos -->
+    <path d="M0 18 Q200 70 400 22 Q600 70 800 22 Q1000 70 1200 22 Q1400 70 1600 18" fill="none" stroke="#222" stroke-width="3"/>
+    <g id="bombillos"></g>
+
+    <!-- Letrero de neón -->
+    <text x="1082" y="98" text-anchor="middle" class="neon" filter="url(#neon)">Bar Naíto Saloon</text>
+
+    <!-- Repisas con botellas (detrás del robot) -->
+    <g id="repisas">
+      <rect x="10" y="330" width="540" height="14" rx="4" fill="url(#madera)"/>
+      <rect x="10" y="500" width="540" height="14" rx="4" fill="url(#madera)"/>
+    </g>
+
+    <!-- Barra: superficie y frente -->
+    <rect y="700" width="1600" height="200" fill="url(#tablas)"/>
+    <rect y="690" width="1600" height="36" rx="6" fill="url(#madera)"/>
+    <rect y="722" width="1600" height="8" fill="#3f2314" opacity=".6"/>
+
+    <!-- Placa del proyecto en la barra, bajo el robot -->
+    <g transform="translate(70 770)">
+      <rect width="460" height="96" rx="12" fill="#c9a227" stroke="#7a5c10" stroke-width="5"/>
+      <text x="230" y="40" text-anchor="middle" class="placa">Detección de cervezas con YOLO26</text>
+      <text x="230" y="72" text-anchor="middle" class="placa chica">Inteligencia Artificial · Universidad EIA</text>
+    </g>
+
+    <!-- Jarras sobre la barra -->
+    <g transform="translate(540 612)">
+      <rect x="0" y="10" width="46" height="70" rx="6" fill="#f5b52e" stroke="#7a4b0c" stroke-width="4"/>
+      <path d="M46 25 h14 a10 10 0 0 1 10 10 v20 a10 10 0 0 1 -10 10 h-14" fill="none" stroke="#7a4b0c" stroke-width="5"/>
+      <ellipse cx="23" cy="10" rx="28" ry="12" fill="#fff8e6" stroke="#cfc3a3" stroke-width="3"/>
+    </g>
+  </svg>
+
+  <!-- Bocadillo de diálogo del robot -->
+  <div id="bocadillo">
+    <div id="texto-bocadillo">¡Hola! Soy Naíto. Muéstrame unas cervezas...</div>
+    <div id="veo"></div>
+  </div>
+
+  <!-- El TELEVISOR del bar: aquí se ve la cámara con las cajas de YOLO -->
+  <div id="tele">
+    <div id="pantalla">
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="cajas" width="1280" height="720"></canvas>
+      <div id="aviso" hidden></div>
+      <div id="hud">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- ===================== El robot Naíto (estilo NAO) ===================== -->
+  <svg id="robot" viewBox="0 0 380 540" width="380" height="540" aria-label="Robot Naíto">
+    <g id="cuerpo">
+      <!-- Piernas y pies -->
+      <rect x="145" y="380" width="36" height="105" rx="14" class="blanco"/>
+      <rect x="199" y="380" width="36" height="105" rx="14" class="blanco"/>
+      <rect x="145" y="420" width="36" height="14" class="naranja"/>
+      <rect x="199" y="420" width="36" height="14" class="naranja"/>
+      <rect x="122" y="478" width="68" height="42" rx="18" class="blanco"/>
+      <rect x="190" y="478" width="68" height="42" rx="18" class="blanco"/>
+      <rect x="126" y="510" width="60" height="10" rx="5" fill="#3a3f4c"/>
+      <rect x="194" y="510" width="60" height="10" rx="5" fill="#3a3f4c"/>
+      <!-- Cadera y torso -->
+      <rect x="140" y="350" width="100" height="38" rx="14" class="gris"/>
+      <path d="M116 226 Q190 208 264 226 L250 360 Q190 376 130 360 Z" class="blanco"/>
+      <path d="M140 242 Q190 230 240 242 L232 318 Q190 331 148 318 Z" class="naranja"/>
+      <circle cx="190" cy="278" r="17" class="led" id="led-pecho"/>
+      <rect x="172" y="203" width="36" height="26" rx="6" fill="#8a909c" stroke="#2b2b38" stroke-width="4"/>
+
+      <!-- Cabeza (gira alrededor del cuello) -->
+      <g id="cabeza">
+        <circle cx="102" cy="130" r="27" class="gris"/>
+        <circle cx="102" cy="130" r="13" class="led oreja"/>
+        <circle cx="278" cy="130" r="27" class="gris"/>
+        <circle cx="278" cy="130" r="13" class="led oreja"/>
+        <rect x="108" y="38" width="164" height="178" rx="74" class="blanco"/>
+        <rect x="158" y="46" width="64" height="16" rx="8" fill="#e3e7ee"/>
+        <rect x="120" y="92" width="140" height="76" rx="38" fill="#2c3140"/>
+        <g id="ojos">
+          <ellipse cx="160" cy="130" rx="18" ry="18" class="ojo"/>
+          <ellipse cx="220" cy="130" rx="18" ry="18" class="ojo"/>
+          <circle cx="160" cy="130" r="6" class="pupila"/>
+          <circle cx="220" cy="130" r="6" class="pupila"/>
+        </g>
+        <g id="corazones" style="display:none">
+          <path d="M160 146 l-17 -17 a9.5 9.5 0 0 1 17 -11 a9.5 9.5 0 0 1 17 11 z" fill="#ff4d8d"/>
+          <path d="M220 146 l-17 -17 a9.5 9.5 0 0 1 17 -11 a9.5 9.5 0 0 1 17 11 z" fill="#ff4d8d"/>
+        </g>
+        <circle id="mejilla1" cx="132" cy="182" r="11" fill="#ff8fb3" opacity="0"/>
+        <circle id="mejilla2" cx="248" cy="182" r="11" fill="#ff8fb3" opacity="0"/>
+        <path id="boca" d="M170 186 Q190 192 210 186" fill="none" stroke="#2b2b38" stroke-width="6" stroke-linecap="round"/>
+      </g>
+
+      <!-- Brazo izquierdo (el que saluda) -->
+      <g id="brazo-izq" transform="translate(118 240) rotate(100)">
+        <rect x="6" y="-14" width="70" height="28" rx="14" class="blanco"/>
+        <circle cx="80" cy="0" r="13" class="gris"/>
+        <rect x="84" y="-13" width="58" height="26" rx="13" class="blanco"/>
+        <circle cx="152" cy="0" r="17" class="blanco"/>
+        <circle cx="0" cy="0" r="22" class="naranja"/>
+      </g>
+      <!-- Brazo derecho (el que SEÑALA la cerveza) -->
+      <g id="brazo-der" transform="translate(262 240) rotate(80)">
+        <rect x="6" y="-14" width="70" height="28" rx="14" class="blanco"/>
+        <circle cx="80" cy="0" r="13" class="gris"/>
+        <rect x="84" y="-13" width="58" height="26" rx="13" class="blanco"/>
+        <rect x="156" y="-6" width="30" height="12" rx="6" class="blanco"/>
+        <circle cx="152" cy="0" r="17" class="blanco"/>
+        <circle cx="0" cy="0" r="22" class="naranja"/>
+      </g>
+    </g>
+  </svg>
+
+  <!-- Línea punteada que va del dedo del robot a la lata elegida -->
+  <canvas id="laser" width="1600" height="900"></canvas>
+
+  <!-- Pizarra en el frente de la barra: el ranking de gustos de Naíto -->
+  <div id="pizarra">
+    <div id="pizarra-titulo">Gustos de Naíto</div>
+    <ol id="ranking"></ol>
+  </div>
+</div>
+
+<!-- ===================== Panel de control (P para mostrar/ocultar) ===================== -->
+<button id="boton-panel" title="Panel (P)">⚙</button>
+<aside id="panel">
+  <h2>Panel de la demo</h2>
+
+  <label>Modelo (.pt)
+    <select id="sel-modelo"></select>
+  </label>
+  <div id="estado-modelo" class="nota"></div>
+
+  <label>Cámara
+    <select id="sel-camara"></select>
+  </label>
+
+  <label>Umbral de confianza: <b id="txt-conf">0.50</b>
+    <input id="conf" type="range" min="0.10" max="0.90" step="0.05" value="0.50">
+  </label>
+
+  <h3>Gustos (1 = le encanta, 6 = nada)</h3>
+  <ol id="lista-gustos"></ol>
+  <div class="fila">
+    <button id="btn-azar">Al azar</button>
+    <button id="btn-restablecer">Restablecer</button>
+  </div>
+
+  <h3>Opciones</h3>
+  <label class="check"><input id="chk-todas" type="checkbox" checked> Mostrar todas las cajas</label>
+  <label class="check"><input id="chk-espejo" type="checkbox"> Espejo (solo visual)</label>
+  <label class="check"><input id="chk-voz" type="checkbox"> Voz de Naíto (V)</label>
+  <label class="check"><input id="chk-tracking" type="checkbox" checked> Tracking (ByteTrack, IDs)</label>
+
+  <p class="nota">Teclas: <b>P</b> panel · <b>F</b> pantalla completa · <b>V</b> voz · <b>M</b> espejo</p>
+</aside>
+
+<!-- ===================== ENTRADA: fachada del saloon con puertas vaqueras ===================== -->
+<div id="entrada">
+  <div id="fachada">
+    <div id="fachada-zoom">
+      <svg viewBox="0 0 1600 900" width="1600" height="900" aria-hidden="true">
+        <defs>
+          <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0b0820"/><stop offset=".7" stop-color="#2a1745"/><stop offset="1" stop-color="#4a2a4a"/>
+          </linearGradient>
+          <radialGradient id="calido" cx="50%" cy="45%" r="70%">
+            <stop offset="0" stop-color="#ffd98a"/><stop offset=".6" stop-color="#e98a32"/><stop offset="1" stop-color="#6a3010"/>
+          </radialGradient>
+          <pattern id="tablas-v" width="44" height="900" patternUnits="userSpaceOnUse">
+            <rect width="44" height="900" fill="#8a5a32"/><rect width="4" height="900" fill="#5a3519"/>
+            <rect x="12" width="2" height="900" fill="#9b6a3d" opacity=".6"/>
+          </pattern>
+          <pattern id="tablas-oscuras" width="40" height="900" patternUnits="userSpaceOnUse">
+            <rect width="40" height="900" fill="#5e3a20"/><rect width="4" height="900" fill="#3f2412"/>
+          </pattern>
+          <pattern id="lata" width="22" height="100" patternUnits="userSpaceOnUse">
+            <rect width="22" height="100" fill="#9a8a78"/><rect width="7" height="100" fill="#7c6c5c"/>
+          </pattern>
+          <!-- Máscara: todo se pinta menos el hueco de la puerta, por donde se ve el bar de verdad (con Naíto) -->
+          <mask id="hueco">
+            <rect width="1600" height="900" fill="#fff"/>
+            <rect x="640" y="440" width="320" height="420" fill="#000"/>
+          </mask>
+        </defs>
+
+        <g mask="url(#hueco)">
+          <!-- Cielo de día, sol, nubes y montañas del desierto -->
+          <rect width="1600" height="900" fill="url(#cielo)"/>
+          <!-- Noche: luna, estrellas y estrella fugaz -->
+          <circle cx="1470" cy="95" r="70" fill="#fff4c9" opacity=".15"/>
+          <circle cx="1470" cy="95" r="46" fill="#fff4c9"/>
+          <circle cx="1490" cy="82" r="44" fill="#170f30"/>
+          <g id="estrellas" fill="#fff"></g>
+          <line class="fugaz" x1="0" y1="0" x2="90" y2="30" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          <path d="M0 640 L90 560 L170 600 L260 520 L330 640 Z M1270 640 L1360 540 L1430 590 L1520 510 L1600 600 V640 Z" fill="#2c1c3a"/>
+          <rect y="830" width="1600" height="70" fill="#7a5636"/>
+          <rect y="830" width="1600" height="8" fill="#5e4028"/>
+
+          <!-- Cercas de madera a los lados -->
+          <g fill="#7a4e2b" stroke="#3a2010" stroke-width="4">
+            <rect x="0" y="640" width="34" height="200"/><rect x="38" y="630" width="34" height="210"/><rect x="76" y="645" width="34" height="195"/><rect x="114" y="635" width="34" height="205"/>
+            <rect x="1452" y="635" width="34" height="205"/><rect x="1490" y="645" width="34" height="195"/><rect x="1528" y="630" width="34" height="210"/><rect x="1566" y="640" width="34" height="200"/>
+          </g>
+
+          <!-- Cuerpo del saloon y frontón con el arco -->
+          <rect x="150" y="300" width="1300" height="545" fill="url(#tablas-oscuras)" stroke="#3a2010" stroke-width="8"/>
+          <path d="M330 345 V228 H560 Q800 108 1040 228 H1270 V345 Z" fill="url(#tablas-v)" stroke="#3a2010" stroke-width="9"/>
+          <rect x="150" y="292" width="182" height="16" fill="#5a3519"/><rect x="1268" y="292" width="182" height="16" fill="#5a3519"/>
+
+          <!-- Adornos del frontón: sombrero, herraduras y estrella -->
+          <g transform="translate(800 168)" class="sombrero">
+            <path d="M-34 -6 Q-30 -48 0 -44 Q30 -48 34 -6 Z" fill="#c8955a" stroke="#5a3519" stroke-width="5"/>
+            <path d="M-30 -14 H30" stroke="#5a3519" stroke-width="7"/>
+            <ellipse cx="0" cy="-4" rx="62" ry="12" fill="#c8955a" stroke="#5a3519" stroke-width="5"/>
+          </g>
+          <g fill="none" stroke="#c9ccd6" stroke-width="10" stroke-linecap="round">
+            <path d="M676 196 V212 A18 18 0 0 0 712 212 V196"/><path d="M888 196 V212 A18 18 0 0 0 924 212 V196"/>
+          </g>
+          <path d="M800 186 l9 19 20 2 -15 14 5 20 -19 -11 -19 11 5 -20 -15 -14 20 -2 z" fill="#c9ccd6" stroke="#6b6e78" stroke-width="3"/>
+          <g transform="translate(415 290) scale(.8)" class="sombrero">
+            <path d="M-34 -6 Q-30 -48 0 -44 Q30 -48 34 -6 Z" fill="#b8844a" stroke="#5a3519" stroke-width="5"/>
+            <ellipse cx="0" cy="-4" rx="62" ry="12" fill="#b8844a" stroke="#5a3519" stroke-width="5"/>
+          </g>
+          <g transform="translate(1185 290) scale(.8)" class="sombrero">
+            <path d="M-34 -6 Q-30 -48 0 -44 Q30 -48 34 -6 Z" fill="#b8844a" stroke="#5a3519" stroke-width="5"/>
+            <ellipse cx="0" cy="-4" rx="62" ry="12" fill="#b8844a" stroke="#5a3519" stroke-width="5"/>
+          </g>
+
+          <!-- Letrero tallado en madera -->
+          <rect x="480" y="248" width="640" height="86" rx="16" fill="#d9a35c" stroke="#3a2010" stroke-width="10"/>
+          <rect x="494" y="260" width="612" height="62" rx="10" fill="none" stroke="#a8743f" stroke-width="3"/>
+          <g fill="#3a2010"><circle cx="502" cy="270" r="5"/><circle cx="1098" cy="270" r="5"/><circle cx="502" cy="312" r="5"/><circle cx="1098" cy="312" r="5"/></g>
+          <text x="800" y="312" text-anchor="middle" class="letrero-oeste">BAR NAÍTO</text>
+
+          <!-- Barras abiertas a los lados con repisas de botellas -->
+          <rect x="190" y="450" width="400" height="245" fill="url(#calido)" stroke="#3a2010" stroke-width="6"/>
+          <rect x="1010" y="450" width="400" height="245" fill="url(#calido)" stroke="#3a2010" stroke-width="6"/>
+          <g id="botellas-fachada"></g>
+          <rect x="170" y="690" width="450" height="22" rx="4" fill="#b9824b" stroke="#3a2010" stroke-width="5"/>
+          <rect x="980" y="690" width="450" height="22" rx="4" fill="#b9824b" stroke="#3a2010" stroke-width="5"/>
+          <rect x="180" y="712" width="430" height="133" fill="url(#tablas-v)" stroke="#3a2010" stroke-width="5"/>
+          <rect x="990" y="712" width="430" height="133" fill="url(#tablas-v)" stroke="#3a2010" stroke-width="5"/>
+
+          <!-- Techo de lata del porche, postes y banderines de estrellas -->
+          <path d="M150 332 H1450 L1545 405 H55 Z" fill="url(#lata)" stroke="#4a3a2c" stroke-width="6"/>
+          <rect x="55" y="402" width="1490" height="18" fill="#5a3519" stroke="#3a2010" stroke-width="4"/>
+          <g fill="#7a4a26" stroke="#3a2010" stroke-width="5">
+            <rect x="158" y="420" width="26" height="425"/><rect x="603" y="420" width="26" height="425"/>
+            <rect x="971" y="420" width="26" height="425"/><rect x="1416" y="420" width="26" height="425"/>
+          </g>
+          <path d="M184 470 L230 420 M603 470 L557 420 M997 470 L1043 420 M1416 470 L1370 420" stroke="#7a4a26" stroke-width="12"/>
+          <path d="M171 432 Q393 470 616 432 Q800 470 984 432 Q1206 470 1429 432" fill="none" stroke="#5a3519" stroke-width="3"/>
+          <g id="banderines"></g>
+          <!-- Faroles colgados del techo, a los lados de la puerta (titilan) -->
+          <g class="farol">
+            <circle cx="575" cy="470" r="62" fill="#ffc35a" opacity=".35" class="halo"/>
+            <path d="M575 420 V442" stroke="#222" stroke-width="5"/>
+            <rect x="558" y="442" width="34" height="54" rx="8" fill="#ffd77a" stroke="#2a2a2a" stroke-width="6"/>
+            <path d="M554 442 h42 l-8 -10 h-26 z" fill="#2a2a2a"/>
+          </g>
+          <g class="farol" style="animation-delay:-1.3s">
+            <circle cx="1025" cy="470" r="62" fill="#ffc35a" opacity=".35" class="halo"/>
+            <path d="M1025 420 V442" stroke="#222" stroke-width="5"/>
+            <rect x="1008" y="442" width="34" height="54" rx="8" fill="#ffd77a" stroke="#2a2a2a" stroke-width="6"/>
+            <path d="M1004 442 h42 l-8 -10 h-26 z" fill="#2a2a2a"/>
+          </g>
+          <rect x="55" y="842" width="1490" height="16" fill="#6b4024" stroke="#3a2010" stroke-width="4"/>
+
+          <!-- Guitarras recostadas -->
+          <g transform="translate(560 770) rotate(-12)" class="guitarra">
+            <rect x="-5" y="-120" width="10" height="90" fill="#5a3519"/><rect x="-9" y="-140" width="18" height="24" rx="3" fill="#3a2010"/>
+            <ellipse cx="0" cy="-12" rx="22" ry="24" fill="#c46a2a" stroke="#3a2010" stroke-width="4"/>
+            <ellipse cx="0" cy="26" rx="30" ry="30" fill="#c46a2a" stroke="#3a2010" stroke-width="4"/>
+            <circle cx="0" cy="4" r="8" fill="#3a2010"/>
+          </g>
+          <g transform="translate(1040 770) rotate(10)" class="guitarra">
+            <rect x="-5" y="-120" width="10" height="90" fill="#5a3519"/><rect x="-9" y="-140" width="18" height="24" rx="3" fill="#3a2010"/>
+            <ellipse cx="0" cy="-12" rx="22" ry="24" fill="#d88a3a" stroke="#3a2010" stroke-width="4"/>
+            <ellipse cx="0" cy="26" rx="30" ry="30" fill="#d88a3a" stroke="#3a2010" stroke-width="4"/>
+            <circle cx="0" cy="4" r="8" fill="#3a2010"/>
+          </g>
+
+          <!-- Barriles -->
+          <g id="barriles" fill="#8d5427" stroke="#3a2010" stroke-width="5">
+            <rect x="215" y="752" width="88" height="100" rx="26"/><rect x="315" y="752" width="88" height="100" rx="26"/>
+            <rect x="1175" y="752" width="88" height="100" rx="26"/><rect x="1275" y="752" width="88" height="100" rx="26"/>
+          </g>
+          <path d="M218 780 H300 M218 826 H300 M318 780 H400 M318 826 H400 M1178 780 H1260 M1178 826 H1260 M1278 780 H1360 M1278 826 H1360" stroke="#3a2010" stroke-width="7"/>
+
+          <!-- Cactus en las esquinas -->
+          <g fill="#3f8f4a" stroke="#1f4d27" stroke-width="6">
+            <rect x="20" y="660" width="54" height="230" rx="27"/>
+            <path d="M20 770 h-20 a14 14 0 0 1 -14 -14 v-70 a14 14 0 0 1 28 0 v56 h6 z"/>
+            <path d="M74 730 h20 a14 14 0 0 0 14 -14 v-60 a14 14 0 0 0 -28 0 v46 h-6 z"/>
+            <rect x="1530" y="700" width="50" height="190" rx="25"/>
+            <path d="M1530 790 h-18 a13 13 0 0 1 -13 -13 v-55 a13 13 0 0 1 26 0 v42 h5 z"/>
+          </g>
+        </g>
+
+        <!-- Marco de la puerta (el hueco queda transparente; las hojas vaqueras son divs para girarlas en 3D) -->
+        <rect x="640" y="440" width="320" height="420" fill="none" stroke="#3a2010" stroke-width="14"/>
+      </svg>
+
+      <div id="puertas">
+        <div class="hoja izq">
+          <svg viewBox="0 0 190 290" width="160" height="220" preserveAspectRatio="none">
+            <path d="M6 6 Q110 4 184 70 V284 H6 Z" class="madera-hoja"/>
+            <path d="M40 10 V284 M80 14 V284 M120 30 V284 M160 52 V284" stroke="#5a3215" stroke-width="5"/>
+            <rect x="6" y="150" width="178" height="18" fill="#7a4a22" stroke="#3a2010" stroke-width="5"/>
+            <rect x="0" y="30" width="16" height="34" rx="3" fill="#2a2a2a"/><rect x="0" y="220" width="16" height="34" rx="3" fill="#2a2a2a"/>
+          </svg>
+        </div>
+        <div class="hoja der">
+          <svg viewBox="0 0 190 290" width="160" height="220" preserveAspectRatio="none">
+            <path d="M184 6 Q80 4 6 70 V284 H184 Z" class="madera-hoja"/>
+            <path d="M150 10 V284 M110 14 V284 M70 30 V284 M30 52 V284" stroke="#5a3215" stroke-width="5"/>
+            <rect x="6" y="150" width="178" height="18" fill="#7a4a22" stroke="#3a2010" stroke-width="5"/>
+            <rect x="174" y="30" width="16" height="34" rx="3" fill="#2a2a2a"/><rect x="174" y="220" width="16" height="34" rx="3" fill="#2a2a2a"/>
+          </svg>
+        </div>
+      </div>
+      <!-- Luz cálida que sale de la puerta al entrar -->
+      <div id="destello"></div>
+      <!-- Una bola de paja rodando por el porche, como en las películas del oeste -->
+      <svg id="paja" viewBox="-50 -50 100 100" width="90" height="90" aria-hidden="true">
+        <g fill="none" stroke="#b08a4a" stroke-width="4" stroke-linecap="round">
+          <circle r="40"/><path d="M-30 -20 Q0 -45 30 -15 Q45 15 10 35 Q-30 40 -38 5 Q-35 -30 0 -30 Q30 -25 25 10 Q15 30 -15 22 Q-28 0 -10 -12 Q10 -15 8 5"/>
+          <path d="M-40 10 Q-10 -10 38 -8 M-20 -35 Q5 0 -5 40"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div id="entrada-ui">
+    <button id="btn-entrar">🍺 Entrar al Bar Naíto</button>
+    <div id="estado-servidor">Buscando el servidor...</div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

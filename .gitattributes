@@ -1,0 +1,6 @@
+# Los .bat necesitan saltos de línea de Windows (CRLF) para funcionar con doble clic
+*.bat text eol=crlf
+# Archivos binarios: git no debe tocarlos
+*.pt binary
+*.png binary
+*.jpg binary
