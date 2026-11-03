@@ -130,6 +130,8 @@ Para la presentación: tecla **F** (pantalla completa) **antes** de entrar, para
 
 ## 6. Cómo funciona por dentro
 
+> Explicación más completa y sencilla, con ejemplos: **[COMO_FUNCIONA.md](COMO_FUNCIONA.md)**.
+
 ```
 Navegador (webcam 1280x720, 30 fps)  ──frame JPEG──▶  servidor.py  (YOLO con el .pt elegido)
           ▲                                                  │

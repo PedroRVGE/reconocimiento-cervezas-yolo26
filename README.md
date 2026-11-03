@@ -27,8 +27,10 @@ gusta de las que ve.
 4. Se abre el navegador en `http://localhost:8000`. Presionar **"Entrar al Bar Naíto"** y **permitir la cámara**.
 5. **No cerrar la ventana negra (consola)** mientras se usa la demo.
 
-Todos los detalles (panel, teclas, cómo funciona y problemas comunes) están en
-**[presentacion/LEEME.md](presentacion/LEEME.md)**.
+Todos los detalles (panel, teclas y problemas comunes) están en
+**[presentacion/LEEME.md](presentacion/LEEME.md)**. La explicación sencilla de **cómo está hecha** (YOLO, tracking
+con ByteTrack, cómo escoge y se mueve Naíto) está en
+**[presentacion/COMO_FUNCIONA.md](presentacion/COMO_FUNCIONA.md)**.
 
 ## Qué hay en el repositorio
 
@@ -40,6 +42,7 @@ Todos los detalles (panel, teclas, cómo funciona y problemas comunes) están en
 │   ├── servidor.py                   servidor local: carga el .pt y corre YOLO (+ tracking ByteTrack)
 │   ├── requirements.txt              ultralytics, opencv-python, lap
 │   ├── LEEME.md                      guía completa de la demo
+│   ├── COMO_FUNCIONA.md              explicación sencilla: cómo está hecha y cómo funciona el tracking
 │   └── web/                          la página: entrada del saloon, bar, robot, televisor y panel
 ├── modelos/                       ← modelos entrenados (no se descomprimen: se usan tal cual)
 │   ├── cervezas_nano_v1.pt / cervezas_small_v1.pt
